@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaSearch, FaHeart, FaStar, FaMoon, FaSun } from "react-icons/fa";
+import { FaSearch, FaHeart, FaStar, FaMoon, FaSun, FaSort } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import axios from "axios";
 
@@ -9,21 +9,30 @@ const MovieWebsite = () => {
   const [watchlist, setWatchlist] = useState([]);
   const [user, setUser] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
+  const [sortBy, setSortBy] = useState("rating");
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const [genres, setGenres] = useState([]);
 
   useEffect(() => {
-    const fetchMovies = async () => {
+    const fetchMoviesAndGenres = async () => {
       try {
-        const response = await axios.get(
-          "https://api.themoviedb.org/3/movie/popular",
-          {
+        const [moviesResponse, genresResponse] = await Promise.all([
+          axios.get("https://api.themoviedb.org/3/movie/popular", {
             headers: {
               Authorization:
                 "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3Y2U3YWRhNjk0YTdlNzY5YmZmYjg4ODc3Mjg2ZDI2MiIsIm5iZiI6MTcyNjczNzAwMy42Mzc1OTEsInN1YiI6IjY2ZWE3NGVjYjY2NzQ2ZGQ3OTBiMWMwZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EPGfk8xBk2clpb_42et7YLHabVDGZy3NSiBbTlSw3_Y",
             },
-          }
-        );
+          }),
+          axios.get("https://api.themoviedb.org/3/genre/movie/list", {
+            headers: {
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3Y2U3YWRhNjk0YTdlNzY5YmZmYjg4ODc3Mjg2ZDI2MiIsIm5iZiI6MTcyNjczNzAwMy42Mzc1OTEsInN1YiI6IjY2ZWE3NGVjYjY2NzQ2ZGQ3OTBiMWMwZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EPGfk8xBk2clpb_42et7YLHabVDGZy3NSiBbTlSw3_Y",
+            },
+          }),
+        ]);
+
         const moviesWithGenres = await Promise.all(
-          response.data.results.map(async (movie) => {
+          moviesResponse.data.results.map(async (movie) => {
             const genreResponse = await axios.get(
               `https://api.themoviedb.org/3/movie/${movie.id}`,
               {
@@ -37,11 +46,12 @@ const MovieWebsite = () => {
           })
         );
         setMovies(moviesWithGenres);
+        setGenres(genresResponse.data.genres);
       } catch (error) {
-        console.error("Error fetching movies:", error);
+        console.error("Error fetching movies and genres:", error);
       }
     };
-    fetchMovies();
+    fetchMoviesAndGenres();
   }, []);
 
   const handleSearch = async (e) => {
@@ -53,7 +63,7 @@ const MovieWebsite = () => {
           {
             headers: {
               Authorization:
-                "Bearer API_KEY",
+                "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3Y2U3YWRhNjk0YTdlNzY5YmZmYjg4ODc3Mjg2ZDI2MiIsIm5iZiI6MTcyNjczNzAwMy42Mzc1OTEsInN1YiI6IjY2ZWE3NGVjYjY2NzQ2ZGQ3OTBiMWMwZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EPGfk8xBk2clpb_42et7YLHabVDGZy3NSiBbTlSw3_Y",
             },
           }
         );
@@ -94,6 +104,23 @@ const MovieWebsite = () => {
     return watchlist.some((m) => m.id === movieId);
   };
 
+  const handleSort = (e) => {
+    setSortBy(e.target.value);
+    if (e.target.value === "rating") {
+      setMovies([...movies].sort((a, b) => b.vote_average - a.vote_average));
+    } else if (e.target.value === "alphabetical") {
+      setMovies([...movies].sort((a, b) => a.title.localeCompare(b.title)));
+    }
+  };
+
+  const handleGenreChange = (e) => {
+    setSelectedGenre(e.target.value);
+  };
+
+  const filteredMovies = selectedGenre
+    ? movies.filter((movie) => movie.genres.includes(selectedGenre))
+    : movies;
+
   return (
     <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
       <header className={`${darkMode ? "bg-gray-800" : "bg-blue-600"} text-white p-4`}>
@@ -120,10 +147,10 @@ const MovieWebsite = () => {
       </header>
 
       <main className="container mx-auto p-4">
-        <div className="mb-8">
-          <div className={`flex items-center ${darkMode ? "bg-gray-800" : "bg-white"} rounded-lg overflow-hidden px-2 py-1 justify-between`}>
+        <div className="mb-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4">
+          <div className={`flex items-center ${darkMode ? "bg-gray-800" : "bg-white"} rounded-lg overflow-hidden px-2 py-1 w-full md:w-1/1`}>
             <input
-              className={`text-base ${darkMode ? "text-gray-300 bg-gray-800" : "text-gray-400 bg-white"} flex-grow outline-none px-2`}
+              className={`text-base ${darkMode ? "text-gray-300 bg-gray-800" : "text-gray-400 bg-white"} flex-grow outline-none px-3`}
               type="text"
               placeholder="Search movies..."
               value={searchTerm}
@@ -133,10 +160,37 @@ const MovieWebsite = () => {
               <FaSearch className={darkMode ? "text-gray-300" : "text-gray-500"} />
             </div>
           </div>
+          <div className="flex items-center space-x-4 w-full md:w-auto">
+            <div className="flex items-center">
+              <FaSort className={`mr-2 ${darkMode ? "text-gray-300" : "text-gray-500"}`} />
+              <select
+                value={sortBy}
+                onChange={handleSort}
+                className={`${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"} border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out`}
+              >
+                <option value="rating">Sort by Rating</option>
+                <option value="alphabetical">Sort Alphabetically</option>
+              </select>
+            </div>
+            <div className="flex items-center">
+              <select
+                value={selectedGenre}
+                onChange={handleGenreChange}
+                className={`${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"} border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out`}
+              >
+                <option value="">All Genres</option>
+                {genres.map((genre) => (
+                  <option key={genre.id} value={genre.name}>
+                    {genre.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {movies.map((movie) => (
+          {filteredMovies.map((movie) => (
             <div key={movie.id} className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-lg shadow-md overflow-hidden flex flex-col`}>
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
@@ -162,30 +216,6 @@ const MovieWebsite = () => {
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-4">Your Watchlist</h2>
-          {watchlist.length === 0 ? (
-            <p>Your watchlist is empty. Start adding movies!</p>
-          ) : (
-            <ul className="space-y-4">
-              {watchlist.map((movie) => (
-                <li
-                  key={movie.id}
-                  className={`flex items-center justify-between ${darkMode ? "bg-gray-800" : "bg-white"} p-4 rounded-lg shadow`}
-                >
-                  <span>{movie.title}</span>
-                  <button
-                    onClick={() => removeFromWatchlist(movie.id)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
       </main>
 
