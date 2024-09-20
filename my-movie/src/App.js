@@ -14,7 +14,7 @@ const MovieWebsite = () => {
   const [genres, setGenres] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const moviesPerPage = 18; // Changed to 18 movies per page
+  const moviesPerPage = 18; 
 
   useEffect(() => {
     fetchMoviesAndGenres();
@@ -25,7 +25,7 @@ const MovieWebsite = () => {
       const [moviesResponse, genresResponse] = await Promise.all([
         axios.get(`https://api.themoviedb.org/3/discover/movie`, {
           params: {
-            api_key: "7ce7ada694a7e769bffb88877286d262",
+            api_key: "",
             sort_by: `${sortBy}.desc`,
             page: currentPage,
             with_genres: selectedGenre,
@@ -33,7 +33,7 @@ const MovieWebsite = () => {
         }),
         axios.get("https://api.themoviedb.org/3/genre/movie/list", {
           params: {
-            api_key: "7ce7ada694a7e769bffb88877286d262",
+            api_key: "",
           },
         }),
       ]);
@@ -44,7 +44,7 @@ const MovieWebsite = () => {
             `https://api.themoviedb.org/3/movie/${movie.id}`,
             {
               params: {
-                api_key: "7ce7ada694a7e769bffb88877286d262",
+                api_key: "",
               },
             }
           );
@@ -68,7 +68,7 @@ const MovieWebsite = () => {
           `https://api.themoviedb.org/3/search/movie`,
           {
             params: {
-              api_key: "7ce7ada694a7e769bffb88877286d262",
+              api_key: "",
               query: e.target.value,
               page: 1,
             },
@@ -80,7 +80,7 @@ const MovieWebsite = () => {
               `https://api.themoviedb.org/3/movie/${movie.id}`,
               {
                 params: {
-                  api_key: "7ce7ada694a7e769bffb88877286d262",
+                  api_key: "",
                 },
               }
             );
