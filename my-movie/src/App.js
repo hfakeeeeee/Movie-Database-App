@@ -14,7 +14,8 @@ const MovieWebsite = () => {
   const [genres, setGenres] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const moviesPerPage = 18; 
+  const [inputPage, setInputPage] = useState("");
+  const moviesPerPage = 18;
 
   useEffect(() => {
     fetchMoviesAndGenres();
@@ -126,6 +127,19 @@ const MovieWebsite = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const handlePageInputChange = (e) => {
+    setInputPage(e.target.value);
+  };
+
+  const handlePageSubmit = (e) => {
+    e.preventDefault();
+    const pageNumber = parseInt(inputPage);
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+      setInputPage("");
+    }
+  };
+
   return (
     <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
       <header className={`${darkMode ? "bg-gray-800" : "bg-blue-600"} text-white p-4`}>
@@ -153,7 +167,7 @@ const MovieWebsite = () => {
 
       <main className="container mx-auto p-4">
         <div className="mb-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4">
-          <div className={`flex items-center ${darkMode ? "bg-gray-800" : "bg-white"} rounded-lg overflow-hidden px-2 py-1 w-full md:w-1/2`}>
+          <div className={`flex items-center ${darkMode ? "bg-gray-800" : "bg-white"} rounded-lg overflow-hidden px-2 py-1 w-full md:w-1/1`}>
             <input
               className={`text-base ${darkMode ? "text-gray-300 bg-gray-800" : "text-gray-400 bg-white"} flex-grow outline-none px-3`}
               type="text"
@@ -233,7 +247,19 @@ const MovieWebsite = () => {
             <FaChevronLeft />
           </button>
           <span className={`${darkMode ? "text-gray-300" : "text-gray-700"}`}>
-            Page {currentPage} of {totalPages}
+            Page
+            <input
+              type="number"
+              value={currentPage}
+              onChange={(e) => {
+                const value = parseInt(e.target.value);
+                if (value > 0 && value <= totalPages) {
+                  setCurrentPage(value);
+                }
+              }}
+              className={`${darkMode ? "bg-gray-700 text-white" : "bg-white text-gray-900"} border border-gray-300 rounded-md px-2 py-1 w-16 ml-2 mr-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+            />
+            of {totalPages}
           </span>
           <button
             onClick={() => paginate(currentPage + 1)}
