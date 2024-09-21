@@ -1,3 +1,3 @@
 # Movie-Database-App
-# Movie Front Page Demo 19/09/24
-![screencapture-localhost-3000-2024-09-19-17_03_46](https://github.com/user-attachments/assets/8da47bc7-8704-4296-97af-c2d49fea8d74)
+# Movie Front Page Demo 21/09/24
+![screencapture-localhost-3000-2024-09-21-14_33_04](https://github.com/user-attachments/assets/e9bad8ce-6fc0-421e-8ec8-556e972dc10b)
