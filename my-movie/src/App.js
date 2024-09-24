@@ -15,8 +15,8 @@ const MovieWebsite = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [inputPage, setInputPage] = useState("");
+  const [selectedMovie, setSelectedMovie] = useState(null);
   const moviesPerPage = 18;
-
   const API = "";
 
   useEffect(() => {
@@ -142,6 +142,85 @@ const MovieWebsite = () => {
     }
   };
 
+  const handleMovieClick = async (movie) => {
+    try {
+      const response = await axios.get(
+        `https://api.themoviedb.org/3/movie/${movie.id}`,
+        {
+          params: {
+            api_key: "7ce7ada694a7e769bffb88877286d262",
+            append_to_response: "credits,videos",
+          },
+        }
+      );
+      setSelectedMovie(response.data);
+    } catch (error) {
+      console.error("Error fetching movie details:", error);
+    }
+  };
+
+  const MovieDetails = ({ movie, onClose }) => {
+    if (!movie) return null;
+
+    return (
+      <div className={`fixed inset-0 z-50 overflow-y-auto ${darkMode ? "bg-gray-900 bg-opacity-75" : "bg-gray-100 bg-opacity-75"}`}>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className={`${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"} p-8 rounded-lg shadow-xl max-w-4xl w-full mx-4`}>
+            <div className="flex justify-between items-start mb-6">
+              <h2 className="text-3xl font-bold">{movie.title}</h2>
+              <button
+                onClick={onClose}
+                className={`${darkMode ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"} text-2xl focus:outline-none`}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="flex flex-col md:flex-row">
+              <img
+                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                alt={movie.title}
+                className="w-full md:w-1/3 rounded-lg shadow-md mb-4 md:mb-0 md:mr-6"
+              />
+              <div className="flex-1">
+                <p className="text-lg mb-4">{movie.overview}</p>
+                <div className="mb-4">
+                  <span className="font-semibold">Release Date:</span> {movie.release_date}
+                </div>
+                <div className="mb-4">
+                  <span className="font-semibold">Genres:</span> {movie.genres.map(g => g.name).join(', ')}
+                </div>
+                <div className="mb-4">
+                  <span className="font-semibold">Rating:</span> {movie.vote_average.toFixed(1)} / 10
+                </div>
+                <div className="mb-4">
+                  <span className="font-semibold">Runtime:</span> {movie.runtime} minutes
+                </div>
+                <div className="mb-4">
+                  <span className="font-semibold">Cast:</span> {movie.credits.cast.slice(0, 5).map(actor => actor.name).join(', ')}
+                </div>
+                {movie.videos.results.length > 0 && (
+                  <div className="mt-6">
+                    <h3 className="text-xl font-semibold mb-2">Trailer</h3>
+                    <div className="aspect-w-16 aspect-h-9">
+                      <iframe
+                        src={`https://www.youtube.com/embed/${movie.videos.results[0].key}`}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        title="Movie Trailer"
+                        className="w-full h-full rounded-lg"
+                      ></iframe>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
       <header className={`${darkMode ? "bg-gradient-to-r from-gray-800 to-gray-900" : "bg-gradient-to-r from-blue-500 to-indigo-600"} text-white py-6 shadow-lg`}>
@@ -216,7 +295,11 @@ const MovieWebsite = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {movies.map((movie) => (
-            <div key={movie.id} className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-lg shadow-md overflow-hidden flex flex-col`}>
+            <div
+              key={movie.id}
+              className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-lg shadow-md overflow-hidden flex flex-col cursor-pointer transform transition duration-300 hover:scale-105`}
+              onClick={() => handleMovieClick(movie)}
+            >
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
@@ -233,7 +316,10 @@ const MovieWebsite = () => {
                   <FaStar className="mr-1" /> {movie.vote_average?.toFixed(1)}
                 </span>
                 <button
-                  onClick={() => isInWatchlist(movie.id) ? removeFromWatchlist(movie.id) : addToWatchlist(movie)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    isInWatchlist(movie.id) ? removeFromWatchlist(movie.id) : addToWatchlist(movie);
+                  }}
                   className={`${isInWatchlist(movie.id) ? (darkMode ? "text-red-400 hover:text-red-300" : "text-red-500 hover:text-red-700") : (darkMode ? "text-gray-400 hover:text-gray-300" : "text-gray-500 hover:text-gray-700")} text-2xl`}
                 >
                   {isInWatchlist(movie.id) ? <FaHeart /> : <FaRegHeart />}
@@ -281,6 +367,10 @@ const MovieWebsite = () => {
           <p>&copy; 2024 MovieApp. All rights reserved.</p>
         </div>
       </footer>
+
+      {selectedMovie && (
+        <MovieDetails movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
+      )}
     </div>
   );
 };
