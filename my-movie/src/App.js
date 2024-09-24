@@ -17,7 +17,7 @@ const MovieWebsite = () => {
   const [inputPage, setInputPage] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null);
   const moviesPerPage = 18;
-  const API = "";
+  const API = "7ce7ada694a7e769bffb88877286d262";
 
   useEffect(() => {
     fetchMoviesAndGenres();
@@ -166,6 +166,7 @@ const MovieWebsite = () => {
       <div className={`fixed inset-0 z-50 overflow-y-auto ${darkMode ? "bg-gray-900 bg-opacity-75" : "bg-gray-100 bg-opacity-75"}`}>
         <div className="flex items-center justify-center min-h-screen">
           <div className={`${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"} p-8 rounded-lg shadow-xl max-w-4xl w-full mx-4`}>
+            {/* Header */}
             <div className="flex justify-between items-start mb-6">
               <h2 className="text-3xl font-bold">{movie.title}</h2>
               <button
@@ -204,9 +205,12 @@ const MovieWebsite = () => {
               </div>
             </div>
   
+            {/* Separator */}
+            <hr className={`${darkMode ? "border-gray-700" : "border-gray-300"} my-4`} />
+  
             {/* Cast Section */}
             <div className="mb-4">
-              <span className="font-semibold text-xl">Cast:</span>
+              <h3 className="text-xl font-semibold">Cast</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
                 {movie.credits.cast.map(actor => (
                   <div key={actor.id} className="text-center">
@@ -221,6 +225,9 @@ const MovieWebsite = () => {
                 ))}
               </div>
             </div>
+  
+            {/* Separator */}
+            <hr className={`${darkMode ? "border-gray-700" : "border-gray-300"} my-4`} />
   
             {/* Larger Trailer Section */}
             {movie.videos.results.length > 0 && (
@@ -238,6 +245,9 @@ const MovieWebsite = () => {
                 </div>
               </div>
             )}
+  
+            {/* Separator */}
+            <hr className={`${darkMode ? "border-gray-700" : "border-gray-300"} my-4`} />
   
             {/* Recommendations Section */}
             {movie.recommendations?.results.length > 0 && (
@@ -264,6 +274,16 @@ const MovieWebsite = () => {
                 </div>
               </div>
             )}
+  
+            {/* Footer */}
+            <div className="flex justify-center mt-8">
+              <button
+                onClick={onClose}
+                className={`${darkMode ? "bg-gray-700 hover:bg-gray-600 text-white" : "bg-blue-500 hover:bg-blue-700 text-white"} py-2 px-4 rounded-lg shadow-md transition-colors duration-200`}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       </div>
