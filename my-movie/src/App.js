@@ -17,6 +17,8 @@ const MovieWebsite = () => {
   const [inputPage, setInputPage] = useState("");
   const moviesPerPage = 18;
 
+  const API = "";
+
   useEffect(() => {
     fetchMoviesAndGenres();
   }, [currentPage, sortBy, selectedGenre]);
@@ -26,7 +28,7 @@ const MovieWebsite = () => {
       const [moviesResponse, genresResponse] = await Promise.all([
         axios.get(`https://api.themoviedb.org/3/discover/movie`, {
           params: {
-            api_key: "",
+            api_key: API,
             sort_by: `${sortBy}.desc`,
             page: currentPage,
             with_genres: selectedGenre,
@@ -34,7 +36,7 @@ const MovieWebsite = () => {
         }),
         axios.get("https://api.themoviedb.org/3/genre/movie/list", {
           params: {
-            api_key: "",
+            api_key: API,
           },
         }),
       ]);
@@ -45,7 +47,7 @@ const MovieWebsite = () => {
             `https://api.themoviedb.org/3/movie/${movie.id}`,
             {
               params: {
-                api_key: "",
+                api_key: API,
               },
             }
           );
@@ -69,7 +71,7 @@ const MovieWebsite = () => {
           `https://api.themoviedb.org/3/search/movie`,
           {
             params: {
-              api_key: "",
+              api_key: API,
               query: e.target.value,
               page: 1,
             },
@@ -81,7 +83,7 @@ const MovieWebsite = () => {
               `https://api.themoviedb.org/3/movie/${movie.id}`,
               {
                 params: {
-                  api_key: "",
+                  api_key: API,
                 },
               }
             );
@@ -142,22 +144,25 @@ const MovieWebsite = () => {
 
   return (
     <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
-      <header className={`${darkMode ? "bg-gray-800" : "bg-blue-600"} text-white p-4`}>
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">MovieApp</h1>
+      <header className={`${darkMode ? "bg-gradient-to-r from-gray-800 to-gray-900" : "bg-gradient-to-r from-blue-500 to-indigo-600"} text-white py-6 shadow-lg`}>
+        <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center space-x-4">
+            <h1 className="text-3xl font-extrabold tracking-tight">MovieApp</h1>
+            <span className="hidden md:inline-block text-sm font-medium bg-opacity-20 bg-white px-3 py-1 rounded-full">Discover & Watch</span>
+          </div>
+          <div className="flex items-center space-x-6">
             <button
               onClick={toggleDarkMode}
-              className={`${darkMode ? "bg-yellow-400 text-gray-900" : "bg-gray-700 text-white"} p-2 rounded-full`}
+              className={`${darkMode ? "bg-yellow-400 text-gray-900" : "bg-gray-700 text-white"} p-2 rounded-full transition-colors duration-200 hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white`}
             >
-              {darkMode ? <FaSun /> : <FaMoon />}
+              {darkMode ? <FaSun className="w-5 h-5" /> : <FaMoon className="w-5 h-5" />}
             </button>
             {user ? (
-              <button className={`${darkMode ? "bg-gray-700 hover:bg-gray-600" : "bg-blue-500 hover:bg-blue-700"} text-white font-bold py-2 px-4 rounded`}>
+              <button className={`${darkMode ? "bg-gray-700 hover:bg-gray-600" : "bg-white text-blue-600 hover:bg-blue-50"} font-semibold py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white`}>
                 Logout
               </button>
             ) : (
-              <button className={`${darkMode ? "bg-gray-700 hover:bg-gray-600" : "bg-blue-500 hover:bg-blue-700"} text-white font-bold py-2 px-4 rounded`}>
+              <button className={`${darkMode ? "bg-gray-700 hover:bg-gray-600" : "bg-white text-blue-600 hover:bg-blue-50"} font-semibold py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white`}>
                 Login
               </button>
             )}
