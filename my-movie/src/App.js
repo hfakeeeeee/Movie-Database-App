@@ -196,7 +196,19 @@ const MovieWebsite = () => {
                   <span className="font-semibold">Runtime:</span> {movie.runtime} minutes
                 </div>
                 <div className="mb-4">
-                  <span className="font-semibold">Cast:</span> {movie.credits.cast.slice(0, 5).map(actor => actor.name).join(', ')}
+                  <span className="font-semibold">Cast:</span>
+                  <div className="flex flex-wrap mt-2">
+                    {movie.credits.cast.slice(0, 5).map(actor => (
+                      <div key={actor.id} className="mr-4 mb-4">
+                        <img
+                          src={`https://image.tmdb.org/t/p/w200${actor.profile_path}`}
+                          alt={actor.name}
+                          className="w-20 h-20 object-cover rounded-full"
+                        />
+                        <p className="text-center mt-1 text-sm">{actor.name}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 {movie.videos.results.length > 0 && (
                   <div className="mt-6">
