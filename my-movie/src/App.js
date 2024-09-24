@@ -17,7 +17,7 @@ const MovieWebsite = () => {
   const [inputPage, setInputPage] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null);
   const moviesPerPage = 18;
-  const API = "7ce7ada694a7e769bffb88877286d262";
+  const API = "";
 
   useEffect(() => {
     fetchMoviesAndGenres();
