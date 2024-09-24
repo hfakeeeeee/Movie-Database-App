@@ -148,8 +148,8 @@ const MovieWebsite = () => {
         `https://api.themoviedb.org/3/movie/${movie.id}`,
         {
           params: {
-            api_key: "7ce7ada694a7e769bffb88877286d262",
-            append_to_response: "credits,videos",
+            api_key: API,
+            append_to_response: "credits,videos,recommendations", 
           },
         }
       );
@@ -161,7 +161,7 @@ const MovieWebsite = () => {
 
   const MovieDetails = ({ movie, onClose }) => {
     if (!movie) return null;
-
+  
     return (
       <div className={`fixed inset-0 z-50 overflow-y-auto ${darkMode ? "bg-gray-900 bg-opacity-75" : "bg-gray-100 bg-opacity-75"}`}>
         <div className="flex items-center justify-center min-h-screen">
@@ -175,63 +175,100 @@ const MovieWebsite = () => {
                 &times;
               </button>
             </div>
-            <div className="flex flex-col md:flex-row">
+  
+            {/* Grouped Image and Movie Details */}
+            <div className="flex flex-col md:flex-row mb-6">
+              {/* Smaller Movie Poster */}
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
-                className="w-full md:w-1/3 rounded-lg shadow-md mb-4 md:mb-0 md:mr-6"
+                className="w-full md:w-48 h-auto rounded-lg shadow-md mb-4 md:mb-0 md:mr-6"
               />
               <div className="flex-1">
                 <p className="text-lg mb-4">{movie.overview}</p>
-                <div className="mb-4">
+                <div className="mb-2">
                   <span className="font-semibold">Release Date:</span> {movie.release_date}
                 </div>
-                <div className="mb-4">
+                <div className="mb-2">
                   <span className="font-semibold">Genres:</span> {movie.genres.map(g => g.name).join(', ')}
                 </div>
-                <div className="mb-4">
+                <div className="mb-2">
                   <span className="font-semibold">Rating:</span> {movie.vote_average.toFixed(1)} / 10
                 </div>
-                <div className="mb-4">
+                <div className="mb-2">
                   <span className="font-semibold">Runtime:</span> {movie.runtime} minutes
                 </div>
-                <div className="mb-4">
-                  <span className="font-semibold">Cast:</span>
-                  <div className="flex flex-wrap mt-2">
-                    {movie.credits.cast.slice(0, 5).map(actor => (
-                      <div key={actor.id} className="mr-4 mb-4">
-                        <img
-                          src={`https://image.tmdb.org/t/p/w200${actor.profile_path}`}
-                          alt={actor.name}
-                          className="w-20 h-20 object-cover rounded-full"
-                        />
-                        <p className="text-center mt-1 text-sm">{actor.name}</p>
-                      </div>
-                    ))}
-                  </div>
+                <div className="mb-2">
+                  <span className="font-semibold">Revenue:</span> ${movie.revenue.toLocaleString()}
                 </div>
-                {movie.videos.results.length > 0 && (
-                  <div className="mt-6">
-                    <h3 className="text-xl font-semibold mb-2">Trailer</h3>
-                    <div className="aspect-w-16 aspect-h-9">
-                      <iframe
-                        src={`https://www.youtube.com/embed/${movie.videos.results[0].key}`}
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        title="Movie Trailer"
-                        className="w-full h-full rounded-lg"
-                      ></iframe>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
+  
+            {/* Cast Section */}
+            <div className="mb-4">
+              <span className="font-semibold text-xl">Cast:</span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
+                {movie.credits.cast.map(actor => (
+                  <div key={actor.id} className="text-center">
+                    <img
+                      src={`https://image.tmdb.org/t/p/w200${actor.profile_path}`}
+                      alt={actor.name}
+                      className="w-32 h-32 object-cover rounded-full mx-auto mb-2"
+                    />
+                    <p className="text-sm font-semibold">{actor.name}</p>
+                    <p className="text-xs text-gray-500">{actor.character}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+  
+            {/* Larger Trailer Section */}
+            {movie.videos.results.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold mb-2">Trailer</h3>
+                <div className="aspect-w-16 aspect-h-9 md:aspect-w-16 md:aspect-h-7">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${movie.videos.results[0].key}`}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title="Movie Trailer"
+                    className="w-full h-full rounded-lg"
+                  ></iframe>
+                </div>
+              </div>
+            )}
+  
+            {/* Recommendations Section */}
+            {movie.recommendations?.results.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold mb-4">Recommended Movies</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {movie.recommendations.results.map((recommendation) => (
+                    <div
+                      key={recommendation.id}
+                      className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transform transition duration-300 hover:scale-105"
+                      onClick={() => handleMovieClick(recommendation)}
+                    >
+                      <img
+                        src={`https://image.tmdb.org/t/p/w500${recommendation.poster_path}`}
+                        alt={recommendation.title}
+                        className="w-full h-64 object-cover"
+                      />
+                      <div className="p-4">
+                        <h2 className="text-xl font-semibold mb-2">{recommendation.title}</h2>
+                        <p className="text-gray-500 mb-2">{recommendation.release_date?.split("-")[0]}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
     );
-  };
+  };  
 
   return (
     <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
