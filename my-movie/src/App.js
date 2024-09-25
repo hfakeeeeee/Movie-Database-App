@@ -25,7 +25,6 @@ const MovieWebsite = () => {
   const [genres, setGenres] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [inputPage, setInputPage] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null);
   const moviesPerPage = 18;
   const [isSignUpPage, setIsSignUpPage] = useState(false);
@@ -150,19 +149,6 @@ const MovieWebsite = () => {
   };
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const handlePageInputChange = (e) => {
-    setInputPage(e.target.value);
-  };
-
-  const handlePageSubmit = (e) => {
-    e.preventDefault();
-    const pageNumber = parseInt(inputPage);
-    if (pageNumber > 0 && pageNumber <= totalPages) {
-      setCurrentPage(pageNumber);
-      setInputPage("");
-    }
-  };
 
   const handleMovieClick = async (movie) => {
     try {
@@ -307,14 +293,12 @@ const MovieWebsite = () => {
             />
             {movie.recommendations?.results.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-xl font-semibold mb-4">
-                  Recommended Movies
-                </h3>
+                <h3 className="text-xl font-semibold mb-4">Recommended Movies</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {movie.recommendations.results.map((recommendation) => (
                     <div
                       key={recommendation.id}
-                      className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transform transition duration-300 hover:scale-105"
+                      className={`${darkMode ? "border-white bg-gray-800" : "border-black bg-white"} rounded-lg shadow-md overflow-hidden cursor-pointer transform transition duration-300 hover:scale-105 flex flex-col justify-between`}
                       onClick={() => handleMovieClick(recommendation)}
                     >
                       <img
@@ -322,15 +306,11 @@ const MovieWebsite = () => {
                         alt={recommendation.title}
                         className="w-full h-64 object-cover"
                       />
-                      <div className="p-4">
-                        <h2
-                          className={`${
-                            darkMode ? "text-black" : "text-black"
-                          } text-xl font-semibold mb-4`}
-                        >
+                      <div className="p-4 flex flex-col justify-between flex-grow">
+                        <h2 className={`${darkMode ? "text-white" : "text-black"} text-xl font-semibold mb-4`}>
                           {recommendation.title}
                         </h2>
-                        <p className="text-gray-500 mb-2">
+                        <p className="text-gray-500 mt-auto">
                           {recommendation.release_date?.split("-")[0]}
                         </p>
                       </div>
