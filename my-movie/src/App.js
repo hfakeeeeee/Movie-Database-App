@@ -13,6 +13,7 @@ import { FaRegHeart } from "react-icons/fa";
 import axios from "axios";
 import LoginPage from "./Login";
 import SignUpPage from "./SignUp";
+import FeaturedMovie from "./FeatureMovie"; 
 
 const MovieWebsite = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,7 +29,29 @@ const MovieWebsite = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const moviesPerPage = 18;
   const [isSignUpPage, setIsSignUpPage] = useState(false);
+  const [popularMovies, setPopularMovies] = useState([]);
   const API = "";
+
+  useEffect(() => {
+    fetchPopularMovies();
+  }, []);
+
+  const fetchPopularMovies = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.themoviedb.org/3/movie/popular`,
+        {
+          params: {
+            api_key: API,
+            page: 1,
+          },
+        }
+      );
+      setPopularMovies(response.data.results);
+    } catch (error) {
+      console.error("Error fetching popular movies:", error);
+    }
+  };
 
   useEffect(() => {
     fetchMoviesAndGenres();
@@ -253,7 +276,7 @@ const MovieWebsite = () => {
             <div className="mb-4">
               <h3 className="text-xl font-semibold">Cast</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
-                {movie.credits.cast.map((actor) => (
+                {movie.credits.cast.slice(0, 8).map((actor) => (
                   <div key={actor.id} className="text-center">
                     <img
                       src={`https://image.tmdb.org/t/p/w200${actor.profile_path}`}
@@ -293,12 +316,18 @@ const MovieWebsite = () => {
             />
             {movie.recommendations?.results.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-xl font-semibold mb-4">Recommended Movies</h3>
+                <h3 className="text-xl font-semibold mb-4">
+                  Recommended Movies
+                </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {movie.recommendations.results.map((recommendation) => (
                     <div
                       key={recommendation.id}
-                      className={`${darkMode ? "border-white bg-gray-800" : "border-black bg-white"} rounded-lg shadow-md overflow-hidden cursor-pointer transform transition duration-300 hover:scale-105 flex flex-col justify-between`}
+                      className={`${
+                        darkMode
+                          ? "border-white bg-gray-800"
+                          : "border-black bg-white"
+                      } rounded-lg shadow-md overflow-hidden cursor-pointer transform transition duration-300 hover:scale-105 flex flex-col justify-between`}
                       onClick={() => handleMovieClick(recommendation)}
                     >
                       <img
@@ -307,7 +336,11 @@ const MovieWebsite = () => {
                         className="w-full h-64 object-cover"
                       />
                       <div className="p-4 flex flex-col justify-between flex-grow">
-                        <h2 className={`${darkMode ? "text-white" : "text-black"} text-xl font-semibold mb-4`}>
+                        <h2
+                          className={`${
+                            darkMode ? "text-white" : "text-black"
+                          } text-xl font-semibold mb-4`}
+                        >
                           {recommendation.title}
                         </h2>
                         <p className="text-gray-500 mt-auto">
@@ -397,6 +430,15 @@ const MovieWebsite = () => {
           </div>
         </div>
       </header>
+
+      {/* Featured Movie Section */}
+      {popularMovies.length > 0 && (
+        <FeaturedMovie
+          movie={popularMovies[0]} // Display the most popular movie
+          handleMovieClick={handleMovieClick}
+          darkMode={darkMode}
+        />
+      )}
 
       <main className="container mx-auto p-4">
         <div className="mb-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4">
