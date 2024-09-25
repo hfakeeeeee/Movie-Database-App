@@ -431,10 +431,9 @@ const MovieWebsite = () => {
         </div>
       </header>
 
-      {/* Featured Movie Section */}
       {popularMovies.length > 0 && (
         <FeaturedMovie
-          movie={popularMovies[0]} // Display the most popular movie
+          movies={popularMovies.slice(0, 3)} 
           handleMovieClick={handleMovieClick}
           darkMode={darkMode}
         />
