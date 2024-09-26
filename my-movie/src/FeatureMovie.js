@@ -17,7 +17,7 @@ const FeaturedMovie = ({ movies, handleMovieClick, darkMode }) => {
       setTimeout(() => {
         setIsTransitioning(false);
         setPrevIndex(null);
-      }, 1000);
+      }, 2000);
     }, 4000); 
 
     return () => clearInterval(interval);

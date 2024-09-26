@@ -6,11 +6,27 @@ const LoginPage = ({ goToSignUp, setUser }) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setUser({ email });
-    console.log("Login submitted", { email, password, rememberMe });
+    const storedUser = localStorage.getItem(email);
+    if (!storedUser) {
+      setError("Account does not exist. Please sign up.");
+      return;
+    }
+
+    const user = JSON.parse(storedUser);
+    if (user.password !== password) {
+      setError("Incorrect password.");
+      return;
+    }
+
+    setUser({ email, isLoading: true });
+    setTimeout(() => {
+      setUser({ email });
+    }, 3000); 
+
   };
 
   return (

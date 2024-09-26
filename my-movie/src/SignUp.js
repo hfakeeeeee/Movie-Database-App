@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { FaUser, FaLock, FaEye, FaEyeSlash, FaEnvelope } from "react-icons/fa";
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
 
 const SignUpPage = ({ goToLogin }) => {
   const [name, setName] = useState("");
@@ -8,15 +10,37 @@ const SignUpPage = ({ goToLogin }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Sign up submitted", {
-      name,
-      email,
-      password,
-      confirmPassword,
+    
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    // Check if the email is already registered
+    const existingUser = localStorage.getItem(email);
+    if (existingUser) {
+      setError("Email is already registered.");
+      return;
+    }
+
+    // Store user data in localStorage
+    const userData = { name, email, password };
+    localStorage.setItem(email, JSON.stringify(userData));
+    console.log("Sign up successful", { name, email });
+
+    // Trigger a toast notification
+    toast.success("Sign up successful! Redirecting to login...", {
+      position: "top-right",
+      autoClose: 3000,  // 3 seconds
     });
+
+    setTimeout(() => {
+      goToLogin();
+    }, 3000);
   };
 
   return (
@@ -155,6 +179,7 @@ const SignUpPage = ({ goToLogin }) => {
             </a>
           </p>
         </div>
+        <ToastContainer />
       </div>
     </div>
   );

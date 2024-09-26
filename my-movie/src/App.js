@@ -14,6 +14,7 @@ import axios from "axios";
 import LoginPage from "./Login";
 import SignUpPage from "./SignUp";
 import FeaturedMovie from "./FeatureMovie"; 
+import MovieLoadingPage from "./Loading";
 
 const MovieWebsite = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -202,11 +203,17 @@ const MovieWebsite = () => {
     setIsSignUpPage(false);
   };
 
+  if (user && user.isLoading) {
+    // Show loading page if isLoading is true
+    return <MovieLoadingPage />;
+  }
+
   if (!user) {
+    // Show Login or SignUp page based on isSignUpPage state
     return isSignUpPage ? (
-      <SignUpPage goToLogin={goToLogin} />
+      <SignUpPage goToLogin={() => setIsSignUpPage(false)} />
     ) : (
-      <LoginPage goToSignUp={goToSignUp} setUser={setUser} />
+      <LoginPage goToSignUp={() => setIsSignUpPage(true)} setUser={setUser} />
     );
   }
 
